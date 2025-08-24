@@ -1,27 +1,27 @@
 import 'dart:ffi';
 
+import 'package:bmi_caculator/cubit/bmi_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 
 enum SexType { MALE, FEMALE }
 
 
-class BmiScreen extends StatefulWidget {
-  const BmiScreen({super.key});
+class BmiScreen extends StatelessWidget {
+  BmiScreen({super.key});
 
-  @override
-  State<BmiScreen> createState() => _BmiScreenState();
-}
-
-class _BmiScreenState extends State<BmiScreen> {
   double height = 100;
   double weight = 50;
   double age    = 8;
-  SexType type = SexType.MALE;
+ static SexType type = SexType.MALE;
 
    Widget build(BuildContext context) {
+    final cubit = context.read<BmiCubit>();
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Container(
+      body:BlocBuilder<BmiCubit, BmiState>(
+        builder: (context, state) {
+          return Container(
         color: Colors.black,
        
         padding: EdgeInsets.only(top: 50,  right: 20, bottom: 20),
@@ -48,7 +48,8 @@ class _BmiScreenState extends State<BmiScreen> {
                    child: InkWell(
                       onTap: () {
                         type = SexType.MALE;
-                        setState(() {});
+                       cubit.maleGender(type );
+                       
                       },
                   
                   child: 
@@ -72,7 +73,7 @@ class _BmiScreenState extends State<BmiScreen> {
                    child: InkWell(
                       onTap: () {
                         type = SexType.FEMALE;
-                        setState(() {});
+                       cubit.femaleGender(type);
                       },
                   
                   child: 
@@ -124,8 +125,7 @@ class _BmiScreenState extends State<BmiScreen> {
                             activeColor: Colors.blue,
                              onChanged: (value){
                               height=value;
-                              setState(() {});
-                              
+                              cubit.showHeight(height,value);
 
                              },
                             ),
@@ -133,7 +133,7 @@ class _BmiScreenState extends State<BmiScreen> {
                             Spacer(),
 
                           Text(
-                          height.toInt().toString(),
+                            height.toInt().toString(),
                           style: TextStyle(fontSize: 40, color: Colors.white),
                         ),
                         Text("CM", style: TextStyle(fontSize: 15, color: Colors.white))
@@ -169,9 +169,8 @@ class _BmiScreenState extends State<BmiScreen> {
                               Row(
                                children: [
                                 FloatingActionButton(onPressed:() {
-                              
-                               weight++;
-                                setState(() { });
+                                  weight++;
+                               cubit.incWeight(weight);
                               },
                               shape: CircleBorder(),
                               backgroundColor: Colors.blue,
@@ -183,8 +182,8 @@ class _BmiScreenState extends State<BmiScreen> {
                                
                                if(weight>0){
                                 weight--;
+                               cubit.decWeight(weight);
                                }
-                                setState(() { });
                               },
                               shape: CircleBorder(),
                               backgroundColor: Colors.blue,
@@ -223,7 +222,8 @@ class _BmiScreenState extends State<BmiScreen> {
                                 FloatingActionButton(
                                   onPressed: (){
                                     age++;
-                                    setState(() { });
+                                    cubit.incAge(age);
+                                   
                  
                                 },
                                 shape: CircleBorder(),
@@ -236,8 +236,9 @@ class _BmiScreenState extends State<BmiScreen> {
                                   onPressed: (){
                                     if(age>0){
                                       age--;
+                                     cubit.decAge(age); 
                                     }
-                                    setState(() { });
+                                  
                  
                                 },
                                 shape: CircleBorder(),
@@ -306,7 +307,17 @@ class _BmiScreenState extends State<BmiScreen> {
 
 
                  ]
-    )));
+    )
+    );
+
+        }
+        
+    ),
+   
+   
+    );
+
+
    }
 }
 
